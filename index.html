@@ -48,7 +48,7 @@ ctx.fillStyle=NAVY;ctx.fillRect(-130,54,260,18);for(let i=0;i<18;i++){ctx.fillSt
 for(let i=0;i<13;i++){let x=-125+i*20;ctx.fillStyle=CHAMP;ctx.beginPath();ctx.ellipse(x,-4,12,9,0,0,6.28);ctx.fill();ctx.fillStyle=IVORY;ctx.beginPath();ctx.ellipse(x,-7,9,7,0,0,6.28);ctx.fill();}
 let top=ctx.createLinearGradient(-90,0,90,0);top.addColorStop(0,'#b9aa8e');top.addColorStop(.3,'#fff9ec');top.addColorStop(.75,'#e9ddc9');top.addColorStop(1,'#b0a087');rounded(-85,-82,170,83,8,top);
 for(let i=0;i<9;i++){let x=-80+i*20;ctx.fillStyle=CHAMP;ctx.beginPath();ctx.ellipse(x,-84,11,8,0,0,6.28);ctx.fill();ctx.fillStyle=IVORY;ctx.beginPath();ctx.ellipse(x,-87,8,6,0,0,6.28);ctx.fill();}
-for(let i=0;i<candles.length;i++){let c=candles[i],tier=i<3?0:1,baseY=tier===0?-82:0,bottom=baseY+c.y+0;let x=c.x;let y=bottom-38;
+for(let i=0;i<candles.length;i++){let c=candles[i],bottom=c.y;let x=c.x;let y=bottom-38;
 ctx.fillStyle='#f4e6c6';ctx.fillRect(x-5,y,10,38);for(let k=0;k<7;k++){ctx.fillStyle=k%2?'#f6edd9':GOLD;ctx.fillRect(x-5,y+k*5,10,2.7);}
 if(c.flame>.8){let fy=y-5,h=c.flame,fl=Math.sin(c.phase)*2+Math.sin(c.phase*2.3);
 glow(x,fy-h*.35,32,'rgb(255,177,65)',.18*c.glow);
