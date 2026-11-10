@@ -24,11 +24,11 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 const W=800,H=1200,canvas=document.querySelector('#scene'),ctx=canvas.getContext('2d'),stage=document.querySelector('#stage');
 const GOLD='#d6b26b',IVORY='#f6edd9',CHAMP='#ecd08c',NAVY='#1c2a48',MID='#080c1c';
 const colors=['#ffdc78','#fffefa','#ffb4c8','#a0c8ff','#ffb450','#f0dca0'];
-const S={TITLE:0,RISE:1,LIT:2,COUNT:3,WISH:4,MADE:5,CELEBRATE:6};
+const S={TITLE:0,RISE:1,LIT:2,COUNT:3,WISH:4,SUCK:5,MADE:6,CELEBRATE:7};
 let state=S.TITLE,t=0,globalT=0,last=0,progress=0,holdTime=0,lightIdx=0,count=3,particles=[],confetti=[],fireworks=[],stars=[],dust=[],candles=[];
 let wishing=false,raf=0,fullscreen=false,audioCtx=null,lastPartyPop=0,balloons=[];
 function sound(freq=520,duration=.12,type='sine',volume=.045){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.setValueAtTime(freq,audioCtx.currentTime);o.frequency.exponentialRampToValueAtTime(Math.max(45,freq*.42),audioCtx.currentTime+duration);g.gain.setValueAtTime(volume,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+duration);}catch(e){}}
-function popSound(){sound(760,.095,'triangle',.07);setTimeout(()=>sound(420,.12,'sine',.035),35);}
+function popSound(){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();const n=Math.floor(audioCtx.sampleRate*.22),buf=audioCtx.createBuffer(1,n,audioCtx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<n;i++){let x=i/n,env=Math.exp(-x*27);d[i]=(Math.random()*2-1)*env*(.9+.1*Math.sin(i*.09));}let src=audioCtx.createBufferSource(),filter=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();src.buffer=buf;filter.type='highpass';filter.frequency.value=650;gain.gain.value=.8;src.connect(filter);filter.connect(gain);gain.connect(audioCtx.destination);src.start();}catch(e){sound(900,.08,'triangle',.08);}}
 const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,p)=>a+(b-a)*p;
 const smooth=x=>(x=clamp(x,0,1),x*x*(3-2*x)),out=x=>1-Math.pow(1-clamp(x,0,1),3);
 function reset(){state=S.TITLE;t=0;progress=0;holdTime=0;lightIdx=0;count=3;particles=[];confetti=[];fireworks=[];candles=[];makeBalloons();for(const x of [-38,0,38])candles.push({x,y:-95,lit:false,phase:rand(0,6.28),flame:0,glow:0});for(const x of [-70,-35,0,35,70])candles.push({x,y:-15,lit:false,phase:rand(0,6.28),flame:0,glow:0});}
@@ -73,16 +73,18 @@ if(state===S.TITLE){}
 else if(state===S.RISE){let p=out(t/2.8);cakeY=lerp(220,0,p);if(t>3.6){state=S.LIT;t=0;lightIdx=0;}}
 else if(state===S.LIT){while(lightIdx<candles.length&&t>lightIdx*.38){candles[lightIdx].lit=true;lightIdx++;}if(t>candles.length*.38+1.8){state=S.COUNT;t=0;count=3;}}
 else if(state===S.COUNT){count=3-Math.floor(t);if(t>3.2){state=S.WISH;t=0;progress=0;}}
-else if(state===S.WISH){if(wishing){holdTime+=dt;progress=Math.min(1,progress+dt*.55);}else progress=Math.max(0,progress-dt*.35);if(progress>=1){candles.forEach(c=>{if(c.lit)for(let j=0;j<14;j++)particle(400+c.x+rand(-8,8),640+c.y-75,rand(-28,28),rand(-65,-15),rand(1.2,2.4),rand(3,8),'#c8cedc',-18);c.lit=false;});sound(180,.55,'sawtooth',.035);setTimeout(()=>sound(620,.18,'triangle',.055),520);state=S.MADE;t=0;wishing=false;}}
-else if(state===S.MADE&&t>3.2){state=S.CELEBRATE;t=0;}
+else if(state===S.WISH){if(wishing){holdTime+=dt;progress=Math.min(1,progress+dt*.55);}else progress=Math.max(0,progress-dt*.35);if(progress>=1){particles=[];for(let i=0;i<260;i++){let x=rand(45,755),y=rand(100,1050),c=candles[Math.floor(rand(0,candles.length))];particles.push({x,y,vx:0,vy:0,life:2.8,max:2.8,size:rand(1.5,4.2),color:Math.random()<.35?'#fff3c7':'#d6b26b',gravity:0,target:{x:400+c.x+rand(-2,2),y:640+c.y-47}});}state=S.SUCK;t=0;wishing=false;}}
+else if(state===S.SUCK){const k=1-Math.exp(-dt*(2.2+t*1.5));for(const p of particles){let target=p.target||{x:400,y:620};p.x+=(target.x-p.x)*k;p.y+=(target.y-p.y)*k;p.life-=dt*.16;}particles=particles.filter(p=>p.life>0);if(t>2.55){candles.forEach(c=>c.lit=false);state=S.MADE;t=0;}}
+else if(state===S.MADE&&t>4.2){state=S.CELEBRATE;t=0;}
 else if(state===S.CELEBRATE){for(const b of balloons){b.y-=b.vy*dt;b.x+=Math.sin(globalT*1.2+b.phase)*b.vx*dt;if(b.y<-b.r-70){b.y=H+rand(10,180);b.x=rand(30,W-30);}}if(Math.random()<.65)confetti.push({x:rand(0,W),y:-20,vx:rand(-45,45),vy:rand(40,140),rot:rand(0,6.28),vrot:rand(-3,3),w:rand(5,13),h:rand(4,9),color:colors[Math.floor(rand(0,colors.length))],life:rand(4,7)});if(Math.random()<.025&&fireworks.length<5){fireworks.push({life:1});firework();}if(globalT-lastPartyPop>1.8&&Math.random()<.035){lastPartyPop=globalT;popSound();let b=balloons[Math.floor(rand(0,balloons.length))];if(b){burst(b.x,b.y);b.y=H+rand(30,150);b.x=rand(30,W-30);b.h=rand(0,360);}}}
 candles.forEach(c=>{c.phase+=dt*9;let target=c.lit?18+progress*14:0;c.flame+=(target-c.flame)*(1-Math.exp(-8*dt));c.glow+=( (c.lit?1+progress*.8:0)-c.glow)*(1-Math.exp(-6*dt));});
 }
 let cakeY=220;
-function draw(){let intensity=state===S.WISH?1-progress*.38:state===S.MADE?0:state===S.CELEBRATE?.9:1;background(intensity);
+function draw(){let intensity=state===S.WISH?1-progress*.38:state===S.SUCK?1-smooth(t/2.65):state===S.MADE?0:state===S.CELEBRATE?.9:1;background(intensity);
 if(state>=S.MADE)glow(400,650,280,'rgb(255,190,210)',state===S.MADE?Math.min(.28,t*.12):.24);
 if(state>=S.RISE&&state!==S.MADE){ctx.save();ctx.translate(0,cakeY);cake();ctx.restore();}
-if(state===S.MADE){ctx.fillStyle=`rgba(0,0,0,${smooth(t/.55)})`;ctx.fillRect(0,0,W,H);}
+if(state===S.SUCK){ctx.fillStyle=`rgba(0,0,0,${smooth(t/2.65)*.985})`;ctx.fillRect(0,0,W,H);}
+if(state===S.MADE){ctx.fillStyle='rgba(0,0,0,.985)';ctx.fillRect(0,0,W,H);let reveal=smooth((t-.45)/1.15);glow(400,555,430,'rgb(255,205,125)',.42*reveal);glow(400,555,210,'rgb(255,231,175)',.18*reveal);}
 for(const p of particles){ctx.globalAlpha=clamp(p.life/p.max,0,1);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,Math.max(.7,p.size*p.life/p.max),0,6.28);ctx.fill();}ctx.globalAlpha=1;
 for(const p of confetti){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.color;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();}
 if(state===S.TITLE){text('MAKE A WISH',67,390,GOLD,1,false,9);text('an interactive birthday surprise',27,470,CHAMP,.9,true);let blink=.55+.45*Math.sin(globalT*2.8);text('Press ENTER to begin',22,755,IVORY,blink,false);}
@@ -90,7 +92,7 @@ if(state===S.RISE)text('Someone special is celebrating today...',22,180,CHAMP,sm
 if(state===S.LIT){text('Before we celebrate...',23,160,CHAMP);text('Close your eyes and make a wish.',27,205,IVORY,smooth((t-1)/1.2),true);}
 if(state===S.COUNT){text(String(Math.max(1,count)),94,280,GOLD,1,false,2);}
 if(state===S.WISH){text('Press and hold to make your wish',22,180);rounded(250,218,300,5,3,'#444b60');rounded(250,218,300*progress,5,3,GOLD);glow(250+300*progress,220,22,'rgb(214,178,107)',.35);}
-if(state===S.MADE){text('HAPPY BIRTHDAY',61,480,GOLD,smooth((t-.45)/.9),false,3);text('BUBU',104,590,IVORY,smooth((t-.8)/.9),false,12);text('Make a wish. Celebrate every moment.',25,690,CHAMP,smooth((t-1.2)/.9),true);}
+if(state===S.MADE&&t>.55){let reveal=smooth((t-.55)/1.1);text('HAPPY BIRTHDAY',61,480,GOLD,reveal,false,3);text('BUBU',104,590,IVORY,reveal,false,12);text('Make a wish. Celebrate every moment.',25,690,CHAMP,smooth((t-1.25)/1),true);}
 if(state===S.CELEBRATE){text('HAPPY BIRTHDAY',57,235,GOLD,1,false,3);text('BUBU',96,330,IVORY,1,false,10);text('May every little wish find its way to you.',25,415,CHAMP,1,true);text('Press R to replay',17,1100,IVORY,.55+.4*Math.sin(globalT*2.2));}
 ctx.globalAlpha=1;
 }
