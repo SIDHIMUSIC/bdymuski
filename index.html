@@ -15,10 +15,46 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .ctrl{pointer-events:auto;border:1px solid #d6b26b66;border-radius:999px;background:#111b31bb;color:#f6edd9;padding:13px 20px;font:11px system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;backdrop-filter:blur(10px);-webkit-tap-highlight-color:transparent}
 .ctrl:active{background:#d6b26b33}
 #hold{display:none;min-width:190px}#hold.visible{display:block}
+#loveNote{position:absolute;inset:0;z-index:5;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#171d31ee,#03050cf5);padding:22px;font-family:Georgia,serif}
+#loveNote.show{display:flex}
+.envelope-wrap{width:min(88%,520px);text-align:center;perspective:1100px}
+.envelope{position:relative;width:100%;height:280px;margin:auto;cursor:pointer;filter:drop-shadow(0 24px 35px #000b);transition:transform .5s}
+.env-back{position:absolute;inset:0;background:linear-gradient(145deg,#d8c39a,#9e8054);border-radius:8px;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+.env-paper{position:absolute;left:7%;width:86%;height:82%;top:3%;background:linear-gradient(135deg,#fff9e9,#e9dcc0);transition:transform 1s cubic-bezier(.2,.8,.2,1);box-shadow:0 2px 12px #0004}
+.env-front{position:absolute;inset:0;background:linear-gradient(150deg,#c7ab7d,#ead8b1);clip-path:polygon(0 0,50% 57%,100% 0,100% 100%,0 100%);border-radius:8px}
+.env-flap{position:absolute;inset:0;background:linear-gradient(150deg,#f0dfbd,#b99765);clip-path:polygon(0 0,100% 0,50% 60%);transform-origin:top;transition:transform .85s ease;backface-visibility:hidden}
+.seal{position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);width:66px;height:66px;border-radius:50%;border:2px solid #e8c77e;background:radial-gradient(circle at 35% 30%,#b94a43,#681c27 72%);color:#f8d99b;font-size:27px;box-shadow:0 4px 12px #4c1720aa;display:grid;place-items:center;cursor:pointer;z-index:2}
+.envelope.open .env-flap{transform:rotateX(180deg);z-index:0}
+.envelope.open .env-paper{transform:translateY(-135px);transition-delay:.25s}
+.envelope.open .seal{opacity:0;pointer-events:none;transition:opacity .2s}
+.note-hint{color:#e8d5ad;letter-spacing:.16em;font:11px system-ui,sans-serif;margin:26px 0 0}
+.love-letter{display:none;position:relative;max-height:78vh;overflow:auto;text-align:left;padding:30px 27px 26px;background:linear-gradient(135deg,#fff9eb,#eee0c4);color:#443322;border:1px solid #d1b986;box-shadow:0 20px 70px #000b;border-radius:3px;line-height:1.75;font-size:17px}
+.love-letter.show{display:block;animation:letterIn .8s ease both}
+@keyframes letterIn{from{opacity:0;transform:translateY(35px) scale(.96)}to{opacity:1;transform:none}}
+.love-letter h2{text-align:center;font-weight:normal;font-style:italic;color:#805b36;font-size:28px;margin:0 0 22px}
+.love-letter p{margin:0 0 15px}
+.letter-sign{text-align:right;font-style:italic;color:#805b36;margin-top:25px}
+.letter-close{display:block;margin:18px auto 0;padding:11px 22px;border:1px solid #9c784c;background:#755638;color:#fff5df;border-radius:30px;font:12px system-ui,sans-serif;letter-spacing:.1em}
 @media(hover:hover) and (pointer:fine){#touch{display:none}}
 </style>
 </head>
-<body><main id="stage" aria-label="Make a Wish birthday animation"><canvas id="scene" width="800" height="1200"></canvas><div id="touch"><button class="ctrl" id="begin">Begin</button><button class="ctrl" id="hold">Hold to make a wish</button><button class="ctrl" id="replay">Replay</button></div><div class="hint">R RESTART&nbsp;&nbsp; · &nbsp;&nbsp;F FULLSCREEN&nbsp;&nbsp; · &nbsp;&nbsp;ESC QUIT</div></main>
+<body><main id="stage" aria-label="Make a Wish birthday animation"><canvas id="scene" width="800" height="1200"></canvas><div id="touch"><button class="ctrl" id="begin">Begin</button><button class="ctrl" id="hold">Hold to make a wish</button><button class="ctrl" id="replay">Replay</button></div><div class="hint">R RESTART&nbsp;&nbsp; · &nbsp;&nbsp;F FULLSCREEN&nbsp;&nbsp; · &nbsp;&nbsp;ESC QUIT</div>
+<div id="loveNote"><div class="envelope-wrap">
+<div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Tap the wax seal to open the letter">
+<div class="env-back"></div><div class="env-paper"></div><div class="env-front"></div><div class="env-flap"></div>
+<button class="seal" id="seal" aria-label="Open sealed letter">♥</button></div>
+<div class="note-hint" id="noteHint">A LETTER, SEALED WITH LOVE · TAP THE SEAL</div>
+<article class="love-letter" id="loveLetter">
+<h2>To My Love, Bubu ♡</h2>
+<p>My love,</p>
+<p>If I could wrap every beautiful thought I have of you into one little letter, it still would not be enough to tell you what you mean to me.</p>
+<p>You make ordinary moments feel special. Your smile, your little ways, and simply having you in my world make life a little softer and brighter. I hope this new year of your life brings you the happiness you quietly wish for, the courage to chase every dream, and countless reasons to smile.</p>
+<p>On your birthday, I wish I could pause time for a moment and remind you how precious you are. No matter how many candles you blow out today, I hope you never lose that spark inside you.</p>
+<p>Keep smiling, keep dreaming, and always remember that you are loved more than these words can ever explain.</p>
+<p>Happy Birthday, my Bubu. Here's to you, to us, and to all the beautiful memories still waiting for us. ♡</p>
+<div class="letter-sign">Forever yours,<br>With all my love ♥</div>
+<button class="letter-close" id="letterClose">FOLD THE LETTER & RETURN TO ENVELOPE</button>
+</article></div></div></main>
 <script>
 (()=>{'use strict';
 const W=800,H=1200,canvas=document.querySelector('#scene'),ctx=canvas.getContext('2d'),stage=document.querySelector('#stage');
@@ -28,10 +64,10 @@ const S={TITLE:0,RISE:1,LIT:2,COUNT:3,WISH:4,SUCK:5,MADE:6,CELEBRATE:7};
 let state=S.TITLE,t=0,globalT=0,last=0,progress=0,holdTime=0,lightIdx=0,count=3,particles=[],confetti=[],fireworks=[],stars=[],dust=[],candles=[];
 let wishing=false,raf=0,fullscreen=false,audioCtx=null,lastPartyPop=0,balloons=[];
 function sound(freq=520,duration=.12,type='sine',volume=.045){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.setValueAtTime(freq,audioCtx.currentTime);o.frequency.exponentialRampToValueAtTime(Math.max(45,freq*.42),audioCtx.currentTime+duration);g.gain.setValueAtTime(volume,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+duration);}catch(e){}}
-function popSound(){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();const n=Math.floor(audioCtx.sampleRate*.22),buf=audioCtx.createBuffer(1,n,audioCtx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<n;i++){let x=i/n,env=Math.exp(-x*27);d[i]=(Math.random()*2-1)*env*(.9+.1*Math.sin(i*.09));}let src=audioCtx.createBufferSource(),filter=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();src.buffer=buf;filter.type='highpass';filter.frequency.value=650;gain.gain.value=.8;src.connect(filter);filter.connect(gain);gain.connect(audioCtx.destination);src.start();}catch(e){sound(900,.08,'triangle',.08);}}
+function popSound(){/* Real recorded balloon-pop audio will be added as a licensed MP3 asset. No synthetic substitute. */}
 const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,p)=>a+(b-a)*p;
 const smooth=x=>(x=clamp(x,0,1),x*x*(3-2*x)),out=x=>1-Math.pow(1-clamp(x,0,1),3);
-function reset(){state=S.TITLE;t=0;progress=0;holdTime=0;lightIdx=0;count=3;particles=[];confetti=[];fireworks=[];candles=[];makeBalloons();for(const x of [-38,0,38])candles.push({x,y:-95,lit:false,phase:rand(0,6.28),flame:0,glow:0});for(const x of [-70,-35,0,35,70])candles.push({x,y:-15,lit:false,phase:rand(0,6.28),flame:0,glow:0});}
+function reset(){document.querySelector('#loveNote')?.classList.remove('show');document.querySelector('#loveLetter')?.classList.remove('show');document.querySelector('#envelope')?.classList.remove('open');state=S.TITLE;t=0;progress=0;holdTime=0;lightIdx=0;count=3;particles=[];confetti=[];fireworks=[];candles=[];makeBalloons();for(const x of [-38,0,38])candles.push({x,y:-95,lit:false,phase:rand(0,6.28),flame:0,glow:0});for(const x of [-70,-35,0,35,70])candles.push({x,y:-15,lit:false,phase:rand(0,6.28),flame:0,glow:0});}
 for(let i=0;i<170;i++)stars.push({x:rand(0,W),y:rand(0,H),b:rand(.3,1),s:rand(.5,2.5),r:rand(.5,1.5)});
 for(let i=0;i<65;i++)dust.push({x:rand(0,W),y:rand(0,H),a:rand(.2,.7),s:rand(8,25)});
 reset();
@@ -76,7 +112,7 @@ else if(state===S.COUNT){count=3-Math.floor(t);if(t>3.2){state=S.WISH;t=0;progre
 else if(state===S.WISH){if(wishing){holdTime+=dt;progress=Math.min(1,progress+dt*.55);}else progress=Math.max(0,progress-dt*.35);if(progress>=1){particles=[];for(let i=0;i<260;i++){let x=rand(45,755),y=rand(100,1050),c=candles[Math.floor(rand(0,candles.length))];particles.push({x,y,vx:0,vy:0,life:2.8,max:2.8,size:rand(1.5,4.2),color:Math.random()<.35?'#fff3c7':'#d6b26b',gravity:0,target:{x:400+c.x+rand(-2,2),y:640+c.y-47}});}state=S.SUCK;t=0;wishing=false;}}
 else if(state===S.SUCK){const k=1-Math.exp(-dt*(2.2+t*1.5));for(const p of particles){let target=p.target||{x:400,y:620};p.x+=(target.x-p.x)*k;p.y+=(target.y-p.y)*k;p.life-=dt*.16;}particles=particles.filter(p=>p.life>0);if(t>2.55){candles.forEach(c=>c.lit=false);state=S.MADE;t=0;}}
 else if(state===S.MADE&&t>4.2){state=S.CELEBRATE;t=0;}
-else if(state===S.CELEBRATE){for(const b of balloons){b.y-=b.vy*dt;b.x+=Math.sin(globalT*1.2+b.phase)*b.vx*dt;if(b.y<-b.r-70){b.y=H+rand(10,180);b.x=rand(30,W-30);}}if(Math.random()<.65)confetti.push({x:rand(0,W),y:-20,vx:rand(-45,45),vy:rand(40,140),rot:rand(0,6.28),vrot:rand(-3,3),w:rand(5,13),h:rand(4,9),color:colors[Math.floor(rand(0,colors.length))],life:rand(4,7)});if(Math.random()<.025&&fireworks.length<5){fireworks.push({life:1});firework();}if(globalT-lastPartyPop>1.8&&Math.random()<.035){lastPartyPop=globalT;popSound();let b=balloons[Math.floor(rand(0,balloons.length))];if(b){burst(b.x,b.y);b.y=H+rand(30,150);b.x=rand(30,W-30);b.h=rand(0,360);}}}
+else if(state===S.CELEBRATE){if(t>5&&!document.querySelector('#loveNote').classList.contains('show'))document.querySelector('#loveNote').classList.add('show');for(const b of balloons){b.y-=b.vy*dt;b.x+=Math.sin(globalT*1.2+b.phase)*b.vx*dt;if(b.y<-b.r-70){b.y=H+rand(10,180);b.x=rand(30,W-30);}}if(Math.random()<.65)confetti.push({x:rand(0,W),y:-20,vx:rand(-45,45),vy:rand(40,140),rot:rand(0,6.28),vrot:rand(-3,3),w:rand(5,13),h:rand(4,9),color:colors[Math.floor(rand(0,colors.length))],life:rand(4,7)});if(Math.random()<.025&&fireworks.length<5){fireworks.push({life:1});firework();}if(globalT-lastPartyPop>1.8&&Math.random()<.035){lastPartyPop=globalT;let b=balloons[Math.floor(rand(0,balloons.length))];if(b){burst(b.x,b.y);b.y=H+rand(30,150);b.x=rand(30,W-30);b.h=rand(0,360);}}}
 candles.forEach(c=>{c.phase+=dt*9;let target=c.lit?18+progress*14:0;c.flame+=(target-c.flame)*(1-Math.exp(-8*dt));c.glow+=( (c.lit?1+progress*.8:0)-c.glow)*(1-Math.exp(-6*dt));});
 }
 let cakeY=220;
@@ -103,6 +139,11 @@ function holdEnd(e){if(e)e.preventDefault();wishing=false;}
 document.addEventListener('keydown',e=>{if(['Space','ArrowUp','ArrowDown'].includes(e.code))e.preventDefault();if(e.code==='Enter')begin();if(e.code==='Space')holdStart(e);if(e.code==='KeyR')reset();if(e.code==='KeyF'){fullscreen=!fullscreen;if(fullscreen&&stage.requestFullscreen)stage.requestFullscreen().catch(()=>{});else if(document.fullscreenElement)document.exitFullscreen?.();}if(e.code==='Escape'){if(document.fullscreenElement)document.exitFullscreen?.();else reset();}});
 document.addEventListener('keyup',e=>{if(e.code==='Space')holdEnd(e);});
 document.querySelector('#begin').addEventListener('click',begin);document.querySelector('#replay').addEventListener('click',reset);
+const env=document.querySelector('#envelope'),seal=document.querySelector('#seal'),letter=document.querySelector('#loveLetter'),noteHint=document.querySelector('#noteHint');
+function openLoveLetter(){if(env.classList.contains('open'))return;env.classList.add('open');noteHint.style.display='none';setTimeout(()=>{letter.classList.add('show');},850);}
+function closeLoveLetter(){letter.classList.remove('show');setTimeout(()=>{env.classList.remove('open');noteHint.style.display='block';},650);}
+seal.addEventListener('click',openLoveLetter);env.addEventListener('click',e=>{if(e.target!==seal)openLoveLetter();});env.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openLoveLetter();}});
+document.querySelector('#letterClose').addEventListener('click',closeLoveLetter);
 const hb=document.querySelector('#hold');hb.addEventListener('pointerdown',holdStart);['pointerup','pointercancel','pointerleave'].forEach(ev=>hb.addEventListener(ev,holdEnd));
 canvas.addEventListener('pointerdown',e=>{if(state===S.TITLE)begin();else if(state===S.WISH){wishing=true;canvas.setPointerCapture?.(e.pointerId);}});
 canvas.addEventListener('pointerup',()=>wishing=false);canvas.addEventListener('pointercancel',()=>wishing=false);
